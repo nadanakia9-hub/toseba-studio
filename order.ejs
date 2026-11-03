@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Paket - Toseba Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen py-10 px-4 font-sans text-slate-100">
+    <div class="max-w-xl mx-auto bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-700">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-400">Pilih Paket Toseba Studio</h1>
+        
+        <form action="/checkout" method="POST" class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium mb-2 text-slate-300">Nama Pelanggan</label>
+                <input type="text" name="customer_name" required placeholder="Masukkan nama kamu..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2 text-slate-300">Pilih Layanan Paket</label>
+                <select name="service_id" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                    <option value="">-- Pilih Jenis Paket --</option>
+                    <% services.forEach(service => { %>
+                        <option value="<%= service.id %>"><%= service.name %> - Rp <%= service.price.toLocaleString('id-ID') %> (<%= service.description %>)</option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2 text-slate-300">Tambahan Orang (Opsional)</label>
+                <input type="number" name="extra_persons" min="0" value="0" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                <p class="text-xs text-slate-400 mt-1">Biaya tambahan Rp 35.000 per orang di luar paket standar.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-2 text-slate-300">Metode Pembayaran</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center space-x-3 bg-slate-900 border border-slate-700 p-3 rounded-lg cursor-pointer hover:border-blue-500">
+                        <input type="radio" name="payment_method" value="qris" checked class="text-blue-600">
+                        <span class="text-sm font-medium">QRIS (Non-Tunai)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-slate-900 border border-slate-700 p-3 rounded-lg cursor-pointer hover:border-blue-500">
+                        <input type="radio" name="payment_method" value="cash" class="text-blue-600">
+                        <span class="text-sm font-medium">Cash (Tunai)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg">
+                Proses Pesanan
+            </button>
+        </form>
+    </div>
+</body>
+</html>

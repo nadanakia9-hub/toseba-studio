@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran Tunai - Toseba Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 font-sans">
+    <div id="appContainer" class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+            💵
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">Silakan Bayar ke Kasir</h2>
+        <p class="text-gray-500 text-sm mb-6">Lakukan pembayaran tunai di Kasir Lantai 1</p>
+
+        <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 text-left mb-6 space-y-2 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Nama Pelanggan:</span>
+                <span class="font-semibold text-gray-800"><%= customerName %></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Pilihan Paket:</span>
+                <span class="font-semibold text-gray-800"><%= serviceName %></span>
+            </div>
+            <% if (extraCount > 0) { %>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Tambahan Orang:</span>
+                <span class="font-semibold text-gray-800"><%= extraCount %> Orang</span>
+            </div>
+            <% } %>
+            <div class="border-t border-gray-200 pt-2 flex justify-between text-base">
+                <span class="font-bold text-gray-700">Total Tagihan:</span>
+                <span class="font-black text-emerald-600">Rp <%= totalPrice.toLocaleString('id-ID') %></span>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3 rounded-lg mb-6 text-left">
+            ℹ️ Sebutkan nama Anda kepada kasir di lantai 1. Setelah pembayaran tunai diterima, nomor antrean Anda akan langsung diterbitkan!
+        </div>
+
+        <a href="/order" class="block w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition text-sm">
+            Kembali ke Halaman Utama
+        </a>
+    </div>
+
+    <script>
+        const socket = io();
+        const currentOrderId = '<%= orderId %>';
+
+        socket.on('payment_approved', (data) => {
+            if (data.id == currentOrderId) {
+                document.getElementById('appContainer').innerHTML = `
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">
+                        ✓
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Pembayaran Tunai Diterima!</h2>
+                    <p class="text-gray-500 text-sm mb-6">Kasir telah mengonfirmasi pembayaran Anda.</p>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6 shadow-inner">
+                        <p class="text-xs font-semibold text-blue-700 uppercase tracking-widest mb-1">Nomor Antrean Anda</p>
+                        <div class="text-6xl font-black text-blue-600 tracking-tight">#${data.queue_number}</div>
+                        <p class="text-sm font-semibold text-gray-800 mt-2">${data.customer_name}</p>
+                    </div>
+
+                    <p class="text-xs text-gray-400 mb-6">Silakan bersiap dan naik ke Lantai 3 (Studio) ketika nomor Anda dipanggil di monitor.</p>
+
+                    <a href="/order" class="block w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition text-sm">
+                        Ambil Antrean Baru
+                    </a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

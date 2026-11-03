@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menunggu Pembayaran - Toseba Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Socket.io client -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 font-sans">
+    <div id="appContainer" class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold animate-pulse">
+            ⏳
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">Menunggu Pembayaran</h2>
+        <p class="text-gray-500 text-sm mb-6">Silakan lakukan pembayaran QRIS di bawah ini</p>
+
+        <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 text-left mb-6 space-y-2 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Nama Pelanggan:</span>
+                <span class="font-semibold text-gray-800"><%= customerName %></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Pilihan Paket:</span>
+                <span class="font-semibold text-gray-800"><%= serviceName %></span>
+            </div>
+            <% if (extraCount > 0) { %>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Tambahan Orang:</span>
+                <span class="font-semibold text-gray-800"><%= extraCount %> Orang</span>
+            </div>
+            <% } %>
+            <div class="border-t border-gray-200 pt-2 flex justify-between text-base">
+                <span class="font-bold text-gray-700">Total Bayar:</span>
+                <span class="font-black text-emerald-600">Rp <%= totalPrice.toLocaleString('id-ID') %></span>
+            </div>
+        </div>
+
+        <!-- Bagian Gambar QRIS -->
+        <div class="bg-white p-3 border-2 border-dashed border-gray-300 rounded-xl inline-block mb-6 shadow-inner">
+            <img src="/images/qris.png" alt="QRIS Toseba Studio" class="w-48 h-48 object-contain mx-auto">
+            <p class="text-xs text-gray-400 mt-2">Scan pakai GoPay, OVO, DANA, BCA, dll</p>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 text-xs p-3 rounded-lg mb-6 text-left">
+            ℹ️ Tunjukkan bukti transfer kepada kasir di Lantai 1 agar nomor antrean Anda dapat segera diterbitkan.
+        </div>
+
+        <a href="/order" class="block w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition text-sm">
+            Batal / Pesan Ulang
+        </a>
+    </div>
+
+    <script>
+        const socket = io();
+        const currentOrderId = '<%= orderId %>';
+
+        // Mendengarkan sinyal jika pembayaran pesanan ini telah dikonfirmasi kasir
+        socket.on('payment_approved', (data) => {
+            if (data.id == currentOrderId) {
+                // Ubah tampilan layar HP pelanggan secara otomatis jadi sukses & muncul nomor antrean!
+                document.getElementById('appContainer').innerHTML = `
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">
+                        ✓
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Pembayaran Berhasil!</h2>
+                    <p class="text-gray-500 text-sm mb-6">Kasir telah mengonfirmasi pembayaran Anda.</p>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6 shadow-inner">
+                        <p class="text-xs font-semibold text-blue-700 uppercase tracking-widest mb-1">Nomor Antrean Anda</p>
+                        <div class="text-6xl font-black text-blue-600 tracking-tight">#${data.queue_number}</div>
+                        <p class="text-sm font-semibold text-gray-800 mt-2">${data.customer_name}</p>
+                    </div>
+
+                    <p class="text-xs text-gray-400 mb-6">Silakan bersiap dan naik ke Lantai 3 (Studio) ketika nomor Anda dipanggil di monitor.</p>
+
+                    <a href="/order" class="block w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition text-sm">
+                        Ambil Antrean Baru
+                    </a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

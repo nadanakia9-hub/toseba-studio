@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Antrean Photobooth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Socket.io client -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-slate-900 min-h-screen text-white flex flex-col justify-between p-8">
+    <header class="text-center">
+        <h1 class="text-4xl font-black tracking-wider uppercase">Photobooth & Studio</h1>
+        <p class="text-blue-300 text-lg">Silakan Menunggu Panggilan Nomor Antrean</p>
+    </header>
+
+    <div class="my-auto text-center bg-white/10 backdrop-blur-md rounded-3xl p-12 shadow-2xl max-w-xl mx-auto w-full border border-white/20">
+        <h3 class="text-xl font-medium text-blue-200 mb-4 uppercase tracking-widest">Nomor Antrean Saat Ini</h3>
+        <div id="currentQueue" class="text-9xl font-black text-yellow-400 tracking-tight mb-4">--</div>
+        <div id="customerName" class="text-2xl font-semibold text-gray-100">Menunggu antrean berikutnya...</div>
+    </div>
+
+    <footer class="text-center text-sm text-gray-400">
+        &copy; 2026 Sistem Antrean Photobooth
+    </footer>
+
+    <script>
+        const socket = io();
+
+        // Mendengarkan sinyal real-time saat ada antrean baru atau dipanggil
+        socket.on('new_queue', (data) => {
+            document.getElementById('currentQueue').innerText = '#' + data.queue_number;
+            document.getElementById('customerName').innerText = 'Atas Nama: ' + data.customer_name;
+        });
+    </script>
+</body>
+</html>

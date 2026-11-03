@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Kasir - Toseba Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-6 font-sans">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">Kasir Lantai 1</h1>
+                <p class="text-slate-500">Verifikasi Pembayaran & Kelola Antrean Studio Lantai 3</p>
+            </div>
+            <a href="/" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-700">Kembali ke Utama</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800 text-white text-sm">
+                        <th class="p-4">ID Order</th>
+                        <th class="p-4">Nama Pelanggan</th>
+                        <th class="p-4">Paket Layanan</th>
+                        <th class="p-4">Total Bayar</th>
+                        <th class="p-4">Metode Bayar</th>
+                        <th class="p-4">Status Pembayaran</th>
+                        <th class="p-4">No. Antrean</th>
+                        <th class="p-4 text-center">Aksi Kasir</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                    <% transactions.forEach(trx => { %>
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 font-bold">#<%= trx.id %></td>
+                        <td class="p-4 font-medium text-slate-900"><%= trx.customer_name %></td>
+                        <td class="p-4 text-slate-600"><%= trx.service_name %></td>
+                        <td class="p-4 font-bold text-emerald-600">Rp <%= trx.total_amount.toLocaleString('id-ID') %></td>
+                        
+                        <!-- Kolom Metode Pembayaran -->
+                        <td class="p-4">
+                            <% if (trx.payment_method === 'cash') { %>
+                                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-1 rounded-full">CASH (TUNAI)</span>
+                            <% } else { %>
+                                <span class="bg-cyan-100 text-cyan-800 text-xs font-semibold px-2.5 py-1 rounded-full">QRIS</span>
+                            <% } %>
+                        </td>
+
+                        <td class="p-4">
+                            <% if (trx.payment_status === 'paid') { %>
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-full">LUNAS</span>
+                            <% } else { %>
+                                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-full animate-pulse">MENUNGGU BAYAR</span>
+                            <% } %>
+                        </td>
+                        <td class="p-4 font-black text-lg text-blue-600">
+                            <%= trx.queue_number ? '#' + trx.queue_number : '-' %>
+                        </td>
+                        <td class="p-4 text-center">
+                            <% if (trx.payment_status === 'pending') { %>
+                                <form action="/admin/confirm-payment/<%= trx.id %>" method="POST">
+                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold text-xs transition shadow">
+                                        ✓ Konfirmasi Bayar & Terbitkan Antrean
+                                    </button>
+                                </form>
+                            <% } else { %>
+                                <span class="text-xs text-slate-400 font-medium">Terverifikasi</span>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
